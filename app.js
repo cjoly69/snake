@@ -22,6 +22,7 @@ function drawBorder() {
 
 function interval() {
     ctx.clearRect(0, 0, width, height);
+    mySnake.draw();
     drawBorder();
     oneBrick.drawSquare("pink");
     play = requestAnimationFrame(interval);
@@ -29,11 +30,11 @@ function interval() {
 }
 let play = requestAnimationFrame(interval);
 
-//for my bricks, contruction and color
+//for my bricks, contruction and color, construction of my snake
 
 class Brick {
 
-    constructor(col, row){
+    constructor(col, row) {
         this.col = col;
         this.row = row;
 
@@ -48,3 +49,21 @@ class Brick {
 }
 
 const oneBrick = new Brick(20, 35);
+
+class Snake {
+    constructor() {
+        this.parts = [
+            new Brick(10, 15),
+            new Brick(9, 15),
+            new Brick(8, 15)
+        ];
+        this.direction = "right";
+    }
+
+    draw() {
+        this.parts.map(part => part.drawSquare("red"));
+
+    }
+}
+
+const mySnake = new Snake();
