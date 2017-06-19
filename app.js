@@ -3,6 +3,8 @@ const ctx = canvas.getContext("2d");
 const width = canvas.width;
 const height = canvas.height;
 
+let endGame = false;
+
 //GRID
 const brickSize = 10;
 const widthDivision = width / brickSize;
@@ -20,6 +22,15 @@ function drawBorder() {
     ctx.fillRect(0, height - brickSize, width, brickSize);
     ctx.fillRect(0, 0, brickSize, height);
     ctx.fillRect(width - brickSize, 0, brickSize, height);
+}
+
+function gameOver() {
+    ctx.font = "50px Monospace";
+    ctx.fillText("Game Over", width/2, height/2);
+    ctx.fillStyle = "#FF0000";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    endGame = true;
 }
 
 // listening events
@@ -65,6 +76,10 @@ class Brick {
         ctx.fillStyle = color;
         ctx.fillRect(x, y, brickSize, brickSize);
     }
+
+    hitBorder(brick) {
+        return this.col === brick.col && this.row === brick.row;
+    }
 }
 
 //const oneBrick = new Brick(20, 35);
@@ -87,6 +102,23 @@ class Snake {
         this.direction = newDirection;
     }
 
+    headCollision(head) {
+        const leftHit = head.col === 0;
+        const topHit = head.row === 0;
+        const bottomHit = head.col === heightDivision - 1;
+        const rightHit = head.row === widthDivision - 1;
+
+        const borderCollision = leftHit || topHit || bottomHit || rightHit;
+
+        let selfHit = false;
+        this.parts.map((part) => {
+            if (head.hitBorder(part)) {
+                selfHit = true;
+        }
+        });
+        return selfHit || borderCollision;
+    }
+
     moveSnake() {
         const head = this.parts[0];
         let newHead;
@@ -102,6 +134,12 @@ class Snake {
         }
         else if (this.direction === "down") {
             newHead = new Brick(head.col , head.row +1);
+        }
+
+        //game over
+        if (this.headCollision(newHead)) {
+            gameOver();
+            return;
         }
 
         this.parts.unshift(newHead);
