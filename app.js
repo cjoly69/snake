@@ -11,56 +11,8 @@ const widthDivision = width / brickSize;
 const heightDivision = height / brickSize;
 
 /*
-functions
+for my bricks, contruction and color, construction of my snake
  */
-
-
-//drawing border, bricks
-function drawBorder() {
-    ctx.fillStyle = "rgba( 0 , 0 , 0, 0.2)";
-    ctx.fillRect(0, 0, width, brickSize);
-    ctx.fillRect(0, height - brickSize, width, brickSize);
-    ctx.fillRect(0, 0, brickSize, height);
-    ctx.fillRect(width - brickSize, 0, brickSize, height);
-}
-
-function gameOver() {
-    ctx.font = "50px Monospace";
-    ctx.fillText("Game Over", width/2, height/2);
-    ctx.fillStyle = "#FF0000";
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-    endGame = true;
-}
-
-// listening events
-const directions = {
-    37 : "left",
-    38 : "up",
-    39 : "right",
-    40 : "down"
-};
-
-addEventListener("keydown", function(event) {
-    const newDirection = directions[event.keyCode];
-    if (newDirection !== undefined) {
-        mySnake.setDirection(newDirection);
-    }
-});
-
-function interval() {
-    ctx.clearRect(0, 0, width, height);
-    mySnake.moveSnake();
-    mySnake.draw();
-    drawBorder();
- //   oneBrick.drawSquare("pink");
-
-    setTimeout(() => play = requestAnimationFrame(interval), 70);
-}
-
-let play = requestAnimationFrame(interval);
-
-//for my bricks, contruction and color, construction of my snake
 
 class Brick {
 
@@ -77,13 +29,24 @@ class Brick {
         ctx.fillRect(x, y, brickSize, brickSize);
     }
 
+    drawApple(color) {
+        const centerX = (this.col * brickSize) + (brickSize / 2);
+        const centerY = (this.row * brickSize) + (brickSize / 2);
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, brickSize / 2, 0, Math.PI * 2, false);
+        ctx.fill();
+    }
+
     hitBorder(brick) {
         return this.col === brick.col && this.row === brick.row;
     }
 }
 
-//const oneBrick = new Brick(20, 35);
-
+/*
+Snake
+ */
 class Snake {
     constructor() {
         this.parts = [
@@ -95,7 +58,9 @@ class Snake {
     }
 
     draw() {
-        this.parts.map( part => part.drawSquare("red"));
+        this.parts.map(part = > part.drawSquare("red")
+    )
+        ;
     }
 
     setDirection(newDirection) {
@@ -112,9 +77,9 @@ class Snake {
 
         let selfHit = false;
         this.parts.map((part) => {
-            if (head.hitBorder(part)) {
-                selfHit = true;
-        }
+            if (head.hitBorder(part)){
+            selfHit = true;
+            }
         });
         return selfHit || borderCollision;
     }
@@ -124,16 +89,16 @@ class Snake {
         let newHead;
 
         if (this.direction === "right") {
-            newHead = new Brick(head.col +1, head.row);
+            newHead = new Brick(head.col + 1, head.row);
         }
         else if (this.direction === "left") {
-            newHead = new Brick(head.col -1, head.row);
+            newHead = new Brick(head.col - 1, head.row);
         }
         else if (this.direction === "up") {
-            newHead = new Brick(head.col , head.row -1);
+            newHead = new Brick(head.col, head.row - 1);
         }
         else if (this.direction === "down") {
-            newHead = new Brick(head.col , head.row +1);
+            newHead = new Brick(head.col, head.row + 1);
         }
 
         //game over
@@ -143,9 +108,99 @@ class Snake {
         }
 
         this.parts.unshift(newHead);
-        this.parts.pop();
+        if (newHead.hitBorder(apple.position)) {
+            apple.move();
+        }
+        else {
+            this.parts.pop();
+        }
 
     }
 }
 
 const mySnake = new Snake();
+
+/*
+ Apple
+ */
+
+class Apple {
+    constructor() {
+        this.position = new Brick(
+            Math.floor(Math.random() * (widthDivision - 2)) + 1,
+            Math.floor(Math.random() * (heightDivision - 2)) + 1
+        );
+    }
+
+    draw() {
+        this.position.drawApple("#BADA55");
+    }
+
+    move() {
+        const randomCol = Math.floor(Math.random() * (widthDivision - 2)) + 1;
+        const randomRow = Math.floor(Math.random() * (heightDivision - 2)) + 1;
+        this.position = new Brick(randomCol, randomRow);
+    }
+}
+
+const apple = new Apple();
+
+/*
+ functions
+ */
+
+
+//drawing border, bricks
+function drawBorder() {
+    ctx.fillStyle = "rgba( 0 , 0 , 0, 0.2)";
+    ctx.fillRect(0, 0, width, brickSize);
+    ctx.fillRect(0, height - brickSize, width, brickSize);
+    ctx.fillRect(0, 0, brickSize, height);
+    ctx.fillRect(width - brickSize, 0, brickSize, height);
+}
+
+function gameOver() {
+    ctx.font = "50px Monospace";
+    ctx.fillText("Game Over", width / 2, height / 2);
+    ctx.fillStyle = "#FF0000";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    endGame = true;
+}
+
+// listening events
+const directions = {
+    37: "left",
+    38: "up",
+    39: "right",
+    40: "down"
+};
+
+addEventListener("keydown", function (event) {
+    if (endGame) {
+        location.reload();
+    }
+
+    const newDirection = directions[event.keyCode];
+    if (newDirection !== undefined) {
+        mySnake.setDirection(newDirection);
+    }
+});
+
+function interval() {
+    if (endGame) {
+        cancelAnimationFrame(play);
+        return;
+    }
+    ctx.clearRect(0, 0, width, height);
+    mySnake.moveSnake();
+    mySnake.draw();
+    apple.draw();
+    drawBorder();
+
+    setTimeout(() = > play = requestAnimationFrame(interval), 80
+)
+    ;
+}
+
+let play = requestAnimationFrame(interval);
