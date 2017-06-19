@@ -114,6 +114,7 @@ class Snake {
 
         this.parts.unshift(newHead);
         if (newHead.hitBorder(apple.position)) {
+            score += 1;//if collision score is increase
             apple.move();
         }
         else {
