@@ -10,8 +10,13 @@ const brickSize = 10;
 const widthDivision = width / brickSize;
 const heightDivision = height / brickSize;
 
+
+//Score
+let score = 0;
+const bestScore = localStorage.getItem("bestScore") || 0;
+
 /*
-for my bricks, contruction and color, construction of my snake
+My bricks, contruction and color, construction of my snake
  */
 
 class Brick {
@@ -159,12 +164,36 @@ function drawBorder() {
     ctx.fillRect(width - brickSize, 0, brickSize, height);
 }
 
+//best score
+function bestScore() {
+    ctx.font = "20px Monospace";
+    ctx.fillStyle = "#FF0000";
+    ctx.textBaseline = "top";
+    ctx.textAlign = "left";
+    ctx.fillText(`Best:${bestScore}./10`, brickSize, brickSize * 2 );
+}
+
+function saveBestScore() {
+    if (score > bestScore) {
+        localStorage.setItem("bestScore", score);
+    }
+}
+
+function speedGame() {
+    const start = 80;
+    const end = 20;
+    const maxScore = 10;
+    const delay = Math.floor(Math.max(start - (start - end) * score / maxScore));
+    console.log(delay);
+    return delay;
+}
+
 function gameOver() {
     ctx.font = "50px Monospace";
-    ctx.fillText("Game Over", width / 2, height / 2);
     ctx.fillStyle = "#FF0000";
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
+    ctx.fillText("Game Over", width / 2, height / 2);
     endGame = true;
 }
 
@@ -189,18 +218,19 @@ addEventListener("keydown", function (event) {
 
 function interval() {
     if (endGame) {
+        saveBestScore();
         cancelAnimationFrame(play);
         return;
     }
     ctx.clearRect(0, 0, width, height);
+    bestScore();
+    saveBestScore()
     mySnake.moveSnake();
     mySnake.draw();
     apple.draw();
     drawBorder();
 
-    setTimeout(() = > play = requestAnimationFrame(interval), 80
-)
-    ;
+    setTimeout(() = > play = requestAnimationFrame(interval), speedGame());
 }
 
 let play = requestAnimationFrame(interval);
