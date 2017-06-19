@@ -166,12 +166,19 @@ function drawBorder() {
 }
 
 //best score
+function score() {
+    ctx.font = "20px Monospace";
+    ctx.fillStyle = "#FF0000";
+    ctx.textBaseline = "top";
+    ctx.textAlign = "left";
+    ctx.fillText(`Score: ${score}./10`, brickSize, brickSize);
+}
 function bestScore() {
     ctx.font = "20px Monospace";
     ctx.fillStyle = "#FF0000";
     ctx.textBaseline = "top";
     ctx.textAlign = "left";
-    ctx.fillText(`Best:${bestScore}./10`, brickSize, brickSize * 2 );
+    ctx.fillText(`Best score: ${bestScore}./10`, brickSize, brickSize * 2 );
 }
 
 function saveBestScore() {
@@ -225,7 +232,7 @@ function interval() {
     }
     ctx.clearRect(0, 0, width, height);
     bestScore();
-    saveBestScore()
+    score();
     mySnake.moveSnake();
     mySnake.draw();
     apple.draw();
