@@ -63,9 +63,8 @@ class Snake {
     }
 
     draw() {
-        this.parts.map(part = > part.drawSquare("red")
-    )
-        ;
+        this.parts
+            .map(part => part.drawSquare("red"))
     }
 
     setDirection(newDirection) {
@@ -166,19 +165,19 @@ function drawBorder() {
 }
 
 //best score
-function score() {
+function addScore() {
     ctx.font = "20px Monospace";
     ctx.fillStyle = "#FF0000";
     ctx.textBaseline = "top";
     ctx.textAlign = "left";
-    ctx.fillText(`Score: ${score}./10`, brickSize, brickSize);
+    ctx.fillText(`Score: ${score}/10`, brickSize, brickSize);
 }
-function bestScore() {
+function addBestScore() {
     ctx.font = "20px Monospace";
     ctx.fillStyle = "#FF0000";
     ctx.textBaseline = "top";
     ctx.textAlign = "left";
-    ctx.fillText(`Best score: ${bestScore}./10`, brickSize, brickSize * 2 );
+    ctx.fillText(`Best score: ${bestScore}/10`, brickSize, brickSize * 3 );
 }
 
 function saveBestScore() {
@@ -192,7 +191,7 @@ function speedGame() {
     const end = 20;
     const maxScore = 10;
     const delay = Math.floor(Math.max(start - (start - end) * score / maxScore));
-    console.log(delay);
+    //console.log(delay);
     return delay;
 }
 
@@ -231,14 +230,14 @@ function interval() {
         return;
     }
     ctx.clearRect(0, 0, width, height);
-    bestScore();
-    score();
+    addBestScore();
+    addScore();
     mySnake.moveSnake();
     mySnake.draw();
     apple.draw();
     drawBorder();
 
-    setTimeout(() = > play = requestAnimationFrame(interval), speedGame());
+    setTimeout(() => play = requestAnimationFrame(interval), speedGame());
 }
 
 let play = requestAnimationFrame(interval);
